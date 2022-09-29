@@ -15,7 +15,7 @@ class CreateCinemaSchema extends Migration
     Please list the tables that you would create including keys, foreign keys and attributes that are required by the user stories.
 
     ## User Stories
-
+    
      **Movie exploration**
      * As a user I want to see which films can be watched and at what times
      * As a user I want to only see the shows which are not booked out
@@ -37,9 +37,53 @@ class CreateCinemaSchema extends Migration
      */
     public function up()
     {
-        throw new \Exception('implement in coding task 4, you can ignore this exception if you are just running the initial migrations.');
-    }
+         Schema::create('movies', function (Blueprint $table) {
+            $table->id();
+            $table->unsignedBigInteger('user_id');
+            $table->timestamp('movie_time');
+            $table->enum('booked_status', [0,1])->default(0);
+            $table->timestamps();
 
+            $table->foreign('user_id')->references('id')->on('users');
+
+        });
+        
+   
+         Schema::create('administrations', function (Blueprint $table) {
+            $table->id();
+            $table->unsignedBigInteger('movie_id');
+            $table->string('location');
+            $table->timestamps();
+
+            $table->foreign('movie_id')->references('id')->on('movies');
+
+        });
+
+        Schema::create('seating', function (Blueprint $table) {
+            $table->id();
+            $table->unsignedBigInteger('user_id');
+            $table->integer('seat_no');
+            $table->enum('seat_type', ['vip seat','couple seat','super vip','simple'])->default('simple');
+            $table->enum('seat_status', [0,1])->default(0);
+            $table->timestamps();
+
+            $table->foreign('user_id')->references('id')->on('users');
+
+        });
+
+         Schema::create('prices', function (Blueprint $table) {
+            $table->id();
+            $table->unsignedBigInteger('show_id');
+            $table->unsignedBigInteger('seat_id');
+            $table->timestamps();
+
+            $table->foreign('seat_id')->references('id')->on('seating');
+
+        });
+
+        
+        
+    }
     /**
      * Reverse the migrations.
      *
